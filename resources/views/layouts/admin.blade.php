@@ -7,6 +7,10 @@
 
     <title>@yield('title', 'Ecopapel Admin')</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="{{ asset('CSS/admin.css') }}">
 </head>
 
@@ -14,26 +18,83 @@
 
 <div class="panel-admin">
 
-    <div class="top-form-admin">
+    <header class="admin-navbar">
 
-        <h1>📦 Ecopapel Admin</h1>
+        <a href="{{ route('admin') }}" class="admin-marca">
 
-        <nav>
-            <a href="{{ route('admin') }}">Panel</a>
-            <a href="{{ route('admin.productos') }}">Productos</a>
-            <a href="{{ route('admin.categorias') }}">Categorías</a>
-            <a href="{{ route('admin.usuarios') }}">Usuarios</a>
-            <a href="{{ route('admin.ventas') }}">Ventas</a>
+            <div class="admin-logo">
+                ♻️
+            </div>
 
-            <form action="{{ route('logout') }}" method="POST" class="form-salir-admin">
-                @csrf
-                <button type="submit" class="btn-salir-admin">
-                    🚪 Salir
-                </button>
-            </form>
+            <div class="admin-marca-texto">
+                <strong>Ecopapel</strong>
+                <span>Administración</span>
+            </div>
+
+        </a>
+
+        <nav class="admin-menu">
+
+            <a href="{{ route('admin') }}"
+               class="{{ request()->routeIs('admin') ? 'activo' : '' }}">
+                <span>▦</span>
+                Panel
+            </a>
+
+            <a href="{{ route('admin.productos.ver') }}"
+               class="{{ request()->routeIs('admin.productos*') ? 'activo' : '' }}">
+                <span>📦</span>
+                Productos
+            </a>
+
+            <a href="{{ route('admin.categorias') }}"
+               class="{{ request()->routeIs('admin.categorias*') ? 'activo' : '' }}">
+                <span>🗂️</span>
+                Categorías
+            </a>
+
+            <a href="{{ route('admin.usuarios') }}"
+               class="{{ request()->routeIs('admin.usuarios*') ? 'activo' : '' }}">
+                <span>👥</span>
+                Usuarios
+            </a>
+
+            <a href="{{ route('admin.ventas') }}"
+               class="{{ request()->routeIs('admin.ventas*') ? 'activo' : '' }}">
+                <span>🛒</span>
+                Ventas
+            </a>
+
+            <a href="{{ route('admin.cortes') }}"
+               class="{{ request()->routeIs('admin.cortes*') ? 'activo' : '' }}">
+                <span>📄</span>
+                Cortes
+            </a>
+
         </nav>
 
-    </div>
+        <div class="admin-usuario">
+
+            <div class="admin-avatar">
+                {{ strtoupper(substr(session('usuario') ?? 'A', 0, 1)) }}
+            </div>
+
+            <div class="admin-usuario-info">
+                <strong>{{ session('usuario') }}</strong>
+                <span>Administrador</span>
+            </div>
+
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+
+                <button type="submit" class="admin-btn-salir" title="Cerrar sesión">
+                    🚪
+                </button>
+            </form>
+
+        </div>
+
+    </header>
 
     @if(session('ok'))
         <div class="mensaje-admin mensaje-ok">
@@ -47,7 +108,7 @@
         </div>
     @endif
 
-    <main>
+    <main class="admin-contenido">
         @yield('content')
     </main>
 
