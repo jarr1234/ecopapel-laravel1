@@ -4,118 +4,178 @@
 
 @section('content')
 
-<div class="login-container">
+<section class="pagina-acceso">
 
-    <div class="login-card">
+    <div class="acceso-layout">
 
-        <div class="login-icon">
-            📱
+        <div class="acceso-presentacion">
+
+            <div class="acceso-marca">
+                <img
+                    src="{{ asset('imagenes/logo2.png') }}"
+                    alt="Ecopapel"
+                >
+                <span>Ecopapel</span>
+            </div>
+
+            <h1>
+                Crea tu cuenta
+            </h1>
+
+            <p>
+                Regístrate para agregar productos a tu carrito
+                y realizar tus compras en Ecopapel.
+            </p>
+
+            <div class="acceso-beneficios">
+
+                <div>
+                    <span>🛒</span>
+                    <p>Agrega tus productos favoritos</p>
+                </div>
+
+                <div>
+                    <span>📦</span>
+                    <p>Realiza tus pedidos fácilmente</p>
+                </div>
+
+                <div>
+                    <span>🔒</span>
+                    <p>Compra desde tu cuenta de forma segura</p>
+                </div>
+
+            </div>
+
         </div>
 
-        <h1>Crear cuenta</h1>
+        <div class="acceso-formulario">
 
-        <p class="login-subtitulo">
-            Regístrate para comprar en Ecopapel
-        </p>
+            <div class="login-card">
 
-        <form
-            action="{{ route('registro.post') }}"
-            method="POST"
-            class="login-form"
-        >
+                <span class="login-etiqueta">
+                    Nueva cuenta
+                </span>
 
-            @csrf
+                <h2>Crear cuenta</h2>
 
-            <div class="login-grupo">
+                <p class="login-subtitulo">
+                    Completa tus datos para comenzar.
+                </p>
 
-                <label for="usuario">
-                    Usuario
-                </label>
-
-                <input
-                    type="text"
-                    id="usuario"
-                    name="usuario"
-                    value="{{ old('usuario') }}"
-                    placeholder="Escribe tu usuario"
-                    maxlength="100"
-                    required
-                    autofocus
+                <form
+                    action="{{ route('registro.post') }}"
+                    method="POST"
+                    class="login-form"
                 >
 
-                @error('usuario')
-                    <span class="form-error">
-                        {{ $message }}
+                    @csrf
+
+                    <div class="login-grupo">
+
+                        <label for="usuario">
+                            Usuario
+                        </label>
+
+                        <input
+                            type="text"
+                            id="usuario"
+                            name="usuario"
+                            value="{{ old('usuario') }}"
+                            placeholder="Escribe tu usuario"
+                            maxlength="100"
+                            required
+                            autofocus
+                        >
+
+                        @error('usuario')
+                            <span class="form-error">
+                                {{ $message }}
+                            </span>
+                        @enderror
+
+                    </div>
+
+                    <div class="login-grupo">
+
+                        <label for="password">
+                            Contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Mínimo 6 caracteres"
+                            minlength="6"
+                            required
+                        >
+
+                        @error('password')
+                            <span class="form-error">
+                                {{ $message }}
+                            </span>
+                        @enderror
+
+                    </div>
+
+                    <div class="login-grupo">
+
+                        <label for="telefono">
+                            Número celular
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="telefono"
+                            name="telefono"
+                            value="{{ old('telefono') }}"
+                            placeholder="Ej. 963 123 4567"
+                            maxlength="20"
+                            required
+                        >
+
+                        @error('telefono')
+                            <span class="form-error">
+                                {{ $message }}
+                            </span>
+                        @enderror
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="login-btn"
+                    >
+                        Crear mi cuenta
+                    </button>
+
+                </form>
+
+                <div class="login-registro">
+
+                    <span>
+                        ¿Ya tienes una cuenta?
                     </span>
-                @enderror
 
-            </div>
+                    <a href="{{ route('login') }}">
+                        Iniciar sesión
+                    </a>
 
-            <div class="login-grupo">
+                </div>
 
-                <label for="password">
-                    Contraseña
-                </label>
-
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Escribe tu contraseña"
-                    minlength="6"
-                    required
+                <a
+                    href="{{ route('productos') }}"
+                    class="acceso-volver"
                 >
-
-                @error('password')
-                    <span class="form-error">
-                        {{ $message }}
-                    </span>
-                @enderror
+                    ← Continuar viendo productos
+                </a>
 
             </div>
-
-            <div class="login-grupo">
-
-                <label for="telefono">
-                    Número celular
-                </label>
-
-                <input
-                    type="tel"
-                    id="telefono"
-                    name="telefono"
-                    value="{{ old('telefono') }}"
-                    placeholder="Escribe tu número celular"
-                    maxlength="20"
-                    required
-                >
-
-                @error('telefono')
-                    <span class="form-error">
-                        {{ $message }}
-                    </span>
-                @enderror
-
-            </div>
-
-            <button type="submit" class="login-btn">
-                Crear cuenta
-            </button>
-
-        </form>
-
-        <div class="login-registro">
-
-            <span>¿Ya tienes una cuenta?</span>
-
-            <a href="{{ route('login') }}">
-                Iniciar sesión
-            </a>
 
         </div>
 
     </div>
 
-</div>
+</section>
 
 @endsection

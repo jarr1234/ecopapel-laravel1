@@ -5,13 +5,32 @@
 @section('content')
 
 <div class="admin-header">
-    <h1>🛒 Ventas</h1>
-    <p>Consulta y administra las ventas de Ecopapel</p>
+    <div>
+        <h1>🛒 Administración de Ventas</h1>
+        <p>Ventas pendientes de corte</p>
+    </div>
+</div>
+
+<div class="acciones-ventas-superior">
+
+    <a
+        href="{{ route('admin.cortes.generar') }}"
+        class="btn-pdf-admin"
+        target="_blank"
+    >
+        📄 Corte del Día
+    </a>
+
+    <a
+        href="{{ route('admin.cortes') }}"
+        class="btn-admin"
+    >
+        📚 Historial de Cortes
+    </a>
+
 </div>
 
 <div class="admin-tabla">
-
-    <h2>📋 Ventas registradas</h2>
 
     <div class="tabla-responsive">
 
@@ -20,12 +39,13 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Usuario</th>
+                    <th>Cliente</th>
                     <th>Total</th>
-                    <th>Pago</th>
+                    <th>Método</th>
+                    <th>Dirección</th>
                     <th>Fecha</th>
                     <th>Estado</th>
-                    <th>Acción</th>
+                    <th>PDF</th>
                 </tr>
             </thead>
 
@@ -52,16 +72,22 @@
                         </td>
 
                         <td>
+                            {{ $venta->direccion }}
+                        </td>
+
+                        <td>
                             {{ $venta->fecha }}
                         </td>
 
                         <td>
-                            {{ $venta->estado ?? 'Pendiente' }}
-                        </td>
 
-                        <td>
+                            @if(strtolower($venta->estado ?? 'pendiente') === 'entregado')
 
-                            @if(($venta->estado ?? 'Pendiente') !== 'Entregado')
+                                <span class="venta-entregada">
+                                    ✅ Entregado
+                                </span>
+
+                            @else
 
                                 <form
                                     action="{{ route('admin.ventas.entregar', $venta->id) }}"
@@ -74,15 +100,31 @@
                                         type="submit"
                                         class="btn-entregar-admin"
                                     >
-                                        ✅ Entregar
+                                        📦 Pendiente
                                     </button>
 
                                 </form>
 
+                            @endif
+
+                        </td>
+
+                        <td>
+
+                            @if(file_exists(public_path('tickets/ticket_' . $venta->id . '.pdf')))
+
+                                <a
+                                    href="{{ route('compra.comprobante', $venta->id) }}"
+                                    target="_blank"
+                                    class="btn-pdf-admin"
+                                >
+                                    📄 Ver PDF
+                                </a>
+
                             @else
 
-                                <span class="venta-entregada">
-                                    ✅ Entregado
+                                <span class="sin-pdf-admin">
+                                    Sin PDF
                                 </span>
 
                             @endif
@@ -94,8 +136,8 @@
                 @empty
 
                     <tr>
-                        <td colspan="7">
-                            No hay ventas registradas.
+                        <td colspan="8">
+                            No hay ventas pendientes de corte.
                         </td>
                     </tr>
 

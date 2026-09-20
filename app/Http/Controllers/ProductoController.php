@@ -9,10 +9,6 @@ class ProductoController extends Controller
 {
     public function index(Request $request)
     {
-        if (!session()->has('usuario')) {
-            return redirect()->route('login');
-        }
-
         $categorias = DB::table('categorias')
             ->orderBy('nombre')
             ->get();

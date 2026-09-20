@@ -4,112 +4,236 @@
 
 @section('content')
 
-<h2 class="titulo">🛍 Productos Disponibles</h2>
+<section class="catalogo">
 
-<div class="menu">
+    <div class="catalogo-encabezado">
 
-    <a href="{{ route('productos') }}">
-        Todas
-    </a>
+        <span class="catalogo-etiqueta">
+            Catálogo Ecopapel
+        </span>
 
-    @foreach($categorias as $categoria)
+        <h1>Productos</h1>
 
-        <a href="{{ route('productos', ['categoria' => $categoria->id]) }}">
-            {{ $categoria->nombre }}
+        <p>
+            Encuentra artículos escolares, de oficina y materiales
+            para tus proyectos.
+        </p>
+
+    </div>
+
+    <div class="filtros-categorias">
+
+        <a
+            href="{{ route('productos') }}"
+            class="filtro-categoria {{ !request('categoria') ? 'activo' : '' }}"
+        >
+            Todos
         </a>
 
-    @endforeach
+        @foreach($categorias as $categoria)
 
-</div>
+            <a
+                href="{{ route('productos', ['categoria' => $categoria->id]) }}"
+                class="filtro-categoria {{ request('categoria') == $categoria->id ? 'activo' : '' }}"
+            >
+                {{ $categoria->nombre }}
+            </a>
 
-<div class="productos">
+        @endforeach
 
-    @forelse($productos as $producto)
+    </div>
 
-        <div class="card">
+    @if(request('buscar'))
 
-            @if(!empty($producto->imagen))
+        <div class="resultado-busqueda">
 
-                <img
-                    src="{{ asset(ltrim(trim($producto->imagen), '/')) }}"
-                    alt="{{ $producto->nombre }}"
-                >
+            <span>
+                Resultados para:
+                <strong>{{ request('buscar') }}</strong>
+            </span>
 
-            @else
+            <a href="{{ route('productos') }}">
+                Limpiar búsqueda
+            </a>
 
-                <div class="sin-imagen">
-                    📦
-                    <p>Sin imagen</p>
+        </div>
+
+    @endif
+
+    <div class="catalogo-productos">
+
+        @forelse($productos as $producto)
+
+            <article class="catalogo-card">
+
+                <div class="catalogo-imagen">
+
+                    @if(!empty($producto->imagen))
+
+                        <img
+                            src="{{ asset(ltrim(trim($producto->imagen), '/')) }}"
+                            alt="{{ $producto->nombre }}"
+                        >
+
+                    @else
+
+                        <div class="sin-imagen">
+                            <span>📦</span>
+                            <p>Sin imagen</p>
+                        </div>
+
+                    @endif
+
+                    @if($producto->stock <= 0)
+
+                        <span class="producto-agotado">
+                            Agotado
+                        </span>
+
+                    @elseif($producto->stock <= 5)
+
+                        <span class="producto-pocas-unidades">
+                            Últimas unidades
+                        </span>
+
+                    @endif
+
                 </div>
 
-            @endif
+                <div class="catalogo-info">
 
-            <h3>
-                {{ $producto->nombre }}
-            </h3>
+                    <span class="catalogo-categoria">
+                        {{ $producto->categoria ?? 'Sin categoría' }}
+                    </span>
 
-            <p class="descripcion">
-                {{ $producto->descripcion }}
-            </p>
+                    <h2>
+                        {{ $producto->nombre }}
+                    </h2>
 
-            <p>
-                📂 {{ $producto->categoria ?? 'Sin categoría' }}
-            </p>
+                    <p class="catalogo-descripcion">
+                        {{ $producto->descripcion }}
+                    </p>
 
-            <p class="precio">
-                💲{{ number_format($producto->precio, 2) }}
-            </p>
+                    <div class="catalogo-datos">
 
-            <p>
-                📦 Stock: {{ $producto->stock }}
-            </p>
+                        <span class="catalogo-precio">
+                            ${{ number_format($producto->precio, 2) }}
+                        </span>
 
-            @if($producto->stock > 0)
+                        @if($producto->stock > 0)
 
-                <form action="{{ route('carrito.agregar') }}" method="POST">
+                            <span class="catalogo-stock">
+                                {{ $producto->stock }} disponibles
+                            </span>
 
-                    @csrf
+                        @else
 
-                    <input
-                        type="hidden"
-                        name="id"
-                        value="{{ $producto->id }}"
-                    >
+                            <span class="catalogo-stock agotado">
+                                Sin existencia
+                            </span>
 
-                    <input
-                        type="number"
-                        name="cantidad"
-                        value="1"
-                        min="1"
-                        max="{{ $producto->stock }}"
-                        class="input-cantidad"
-                    >
+                        @endif
 
-                    <button type="submit" class="btn">
-                        🛒 Agregar al carrito
-                    </button>
+                    </div>
 
-                </form>
+                    @if($producto->stock > 0)
 
-            @else
+                        @if(session('usuario'))
 
-                <button type="button" class="btn" disabled>
-                    ❌ Sin existencia
-                </button>
+                            <form
+                                action="{{ route('carrito.agregar') }}"
+                                method="POST"
+                                class="form-agregar-carrito"
+                            >
 
-            @endif
+                                @csrf
 
-        </div>
+                                <input
+                                    type="hidden"
+                                    name="id"
+                                    value="{{ $producto->id }}"
+                                >
 
-    @empty
+                                <div class="compra-producto">
 
-        <div class="sin-resultados">
-            <h2>❌ No se encontraron productos</h2>
-            <p>Prueba con otra categoría o búsqueda.</p>
-        </div>
+                                    <div class="cantidad-producto">
 
-    @endforelse
+                                        <label for="cantidad-{{ $producto->id }}">
+                                            Cantidad
+                                        </label>
 
-</div>
+                                        <input
+                                            id="cantidad-{{ $producto->id }}"
+                                            type="number"
+                                            name="cantidad"
+                                            value="1"
+                                            min="1"
+                                            max="{{ $producto->stock }}"
+                                            class="input-cantidad"
+                                        >
+
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        class="btn-agregar-carrito"
+                                    >
+                                        🛒 Agregar
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        @else
+
+                            <a
+                                href="{{ route('login') }}"
+                                class="btn-agregar-carrito btn-login-compra"
+                            >
+                                🛒 Inicia sesión para comprar
+                            </a>
+
+                        @endif
+
+                    @else
+
+                        <button
+                            type="button"
+                            class="btn-agotado"
+                            disabled
+                        >
+                            Sin existencia
+                        </button>
+
+                    @endif
+
+                </div>
+
+            </article>
+
+        @empty
+
+            <div class="sin-resultados">
+
+                <span>🔎</span>
+
+                <h2>No encontramos productos</h2>
+
+                <p>
+                    Prueba con otra búsqueda o selecciona otra categoría.
+                </p>
+
+                <a href="{{ route('productos') }}">
+                    Ver todos los productos
+                </a>
+
+            </div>
+
+        @endforelse
+
+    </div>
+
+</section>
 
 @endsection

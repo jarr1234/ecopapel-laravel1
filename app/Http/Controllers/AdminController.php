@@ -396,7 +396,8 @@ class AdminController extends Controller
         $this->guard();
 
         $ventas = DB::table('ventas')
-            ->orderByDesc('fecha')
+            ->where('corte', 0)
+            ->orderByDesc('id')
             ->get();
 
         return view('admin.ventas', compact('ventas'));
@@ -408,68 +409,379 @@ class AdminController extends Controller
 
         $venta = DB::table('ventas')
             ->where('id', $id)
+            ->where('corte', 0)
             ->first();
 
         if (!$venta) {
             return back()
-                ->with('error', 'La venta no existe.');
+                ->with('error', 'La venta no existe o ya fue incluida en un corte.');
         }
 
         DB::table('ventas')
             ->where('id', $id)
             ->update([
-                'estado' => 'entregado',
+                'estado' => 'Entregado',
             ]);
 
         return back()
             ->with('ok', 'Venta marcada como entregada.');
     }
 
-    public function cortes(Request $request)
+    public function cortes()
     {
         $this->guard();
 
-        $desde = $request->input('desde');
-        $hasta = $request->input('hasta');
+        $carpeta = public_path('cortes');
 
-        $consulta = DB::table('ventas');
-
-        if ($desde) {
-            $consulta->whereDate('fecha', '>=', $desde);
+        if (!is_dir($carpeta)) {
+            mkdir($carpeta, 0777, true);
         }
 
-        if ($hasta) {
-            $consulta->whereDate('fecha', '<=', $hasta);
+        $archivos = glob(
+            $carpeta . DIRECTORY_SEPARATOR . '*.pdf'
+        );
+
+        if ($archivos === false) {
+            $archivos = [];
         }
 
-        $ventas = $consulta
-            ->orderByDesc('fecha')
+        usort($archivos, function ($a, $b) {
+            return filemtime($b) <=> filemtime($a);
+        });
+
+        $cortes = collect($archivos)->map(function ($archivo) {
+            return [
+                'nombre' => basename($archivo),
+                'fecha' => date(
+                    'd/m/Y H:i:s',
+                    filemtime($archivo)
+                ),
+            ];
+        });
+
+        return view(
+            'admin.cortes',
+            compact('cortes')
+        );
+    }
+
+    public function verCorte($archivo)
+    {
+        $this->guard();
+
+        $archivo = basename($archivo);
+
+        if (
+            strtolower(
+                pathinfo($archivo, PATHINFO_EXTENSION)
+            ) !== 'pdf'
+        ) {
+            abort(404);
+        }
+
+        $ruta = public_path(
+            'cortes/' . $archivo
+        );
+
+        if (!file_exists($ruta)) {
+            abort(404);
+        }
+
+        return response()->file(
+            $ruta,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' =>
+                    'inline; filename="' .
+                    $archivo .
+                    '"',
+            ]
+        );
+    }
+
+    public function generarCorteDia()
+    {
+        $this->guard();
+
+        $ventas = DB::table('ventas')
+            ->where('corte', 0)
+            ->whereRaw('LOWER(estado) = ?', ['entregado'])
+            ->orderByDesc('id')
             ->get();
+
+        if ($ventas->isEmpty()) {
+            return redirect()
+                ->route('admin.ventas')
+                ->with(
+                    'error',
+                    'No hay ventas entregadas pendientes para generar corte.'
+                );
+        }
 
         $totalVentas = $ventas->count();
         $totalDinero = $ventas->sum('total');
 
-        $totalEfectivo = $ventas
-            ->where('metodo_pago', 'Efectivo')
-            ->sum('total');
+        require_once public_path(
+            'fpdf/fpdf.php'
+        );
 
-        $totalTarjeta = $ventas
-            ->where('metodo_pago', 'Tarjeta')
-            ->sum('total');
+        $pdf = new \FPDF();
+        $pdf->SetAutoPageBreak(true, 15);
+        $pdf->AddPage();
 
-        $totalTransferencia = $ventas
-            ->where('metodo_pago', 'Transferencia')
-            ->sum('total');
+        $pdf->SetFont(
+            'Arial',
+            'B',
+            16
+        );
 
-        return view('admin.cortes', compact(
-            'ventas',
-            'totalVentas',
-            'totalDinero',
-            'totalEfectivo',
-            'totalTarjeta',
-            'totalTransferencia',
-            'desde',
-            'hasta'
-        ));
+        $pdf->Cell(
+            190,
+            10,
+            'CORTE DEL DIA',
+            0,
+            1,
+            'C'
+        );
+
+        $pdf->Ln(5);
+
+        $ahora = now('America/Mexico_City');
+
+        $pdf->SetFont(
+            'Arial',
+            '',
+            12
+        );
+
+        $pdf->Cell(
+            190,
+            8,
+            'Fecha: ' .
+            $ahora->format('d/m/Y'),
+            0,
+            1
+        );
+
+        $pdf->Cell(
+            190,
+            8,
+            'Hora: ' .
+            $ahora->format('H:i:s'),
+            0,
+            1
+        );
+
+        $pdf->Ln(5);
+
+        $pdf->SetFont(
+            'Arial',
+            'B',
+            10
+        );
+
+        $pdf->Cell(
+            15,
+            10,
+            'ID',
+            1
+        );
+
+        $pdf->Cell(
+            55,
+            10,
+            'Cliente',
+            1
+        );
+
+        $pdf->Cell(
+            35,
+            10,
+            'Total',
+            1
+        );
+
+        $pdf->Cell(
+            40,
+            10,
+            'Metodo',
+            1
+        );
+
+        $pdf->Cell(
+            45,
+            10,
+            'Estado',
+            1
+        );
+
+        $pdf->Ln();
+
+        $pdf->SetFont(
+            'Arial',
+            '',
+            9
+        );
+
+        foreach ($ventas as $venta) {
+            $usuario = $this->textoPdf(
+                $venta->usuario
+            );
+
+            $metodo = $this->textoPdf(
+                $venta->metodo_pago
+            );
+
+            $estado = $this->textoPdf(
+                $venta->estado
+            );
+
+            if (strlen($usuario) > 28) {
+                $usuario =
+                    substr(
+                        $usuario,
+                        0,
+                        25
+                    ) .
+                    '...';
+            }
+
+            $pdf->Cell(
+                15,
+                10,
+                $venta->id,
+                1
+            );
+
+            $pdf->Cell(
+                55,
+                10,
+                $usuario,
+                1
+            );
+
+            $pdf->Cell(
+                35,
+                10,
+                '$' .
+                number_format(
+                    $venta->total,
+                    2
+                ),
+                1
+            );
+
+            $pdf->Cell(
+                40,
+                10,
+                $metodo,
+                1
+            );
+
+            $pdf->Cell(
+                45,
+                10,
+                $estado,
+                1
+            );
+
+            $pdf->Ln();
+        }
+
+        $pdf->Ln(5);
+
+        $pdf->SetFont(
+            'Arial',
+            'B',
+            12
+        );
+
+        $pdf->Cell(
+            190,
+            10,
+            'Ventas realizadas: ' .
+            $totalVentas,
+            1,
+            1,
+            'C'
+        );
+
+        $pdf->Cell(
+            190,
+            10,
+            'Total vendido: $' .
+            number_format(
+                $totalDinero,
+                2
+            ),
+            1,
+            1,
+            'C'
+        );
+
+        $carpeta = public_path(
+            'cortes'
+        );
+
+        if (!is_dir($carpeta)) {
+            mkdir(
+                $carpeta,
+                0777,
+                true
+            );
+        }
+
+        $nombreArchivo =
+            'corte_' .
+            $ahora->format(
+                'Y-m-d_H-i-s'
+            ) .
+            '.pdf';
+
+        $ruta =
+            $carpeta .
+            DIRECTORY_SEPARATOR .
+            $nombreArchivo;
+
+        $pdf->Output(
+            'F',
+            $ruta
+        );
+
+        $idsVentas = $ventas
+            ->pluck('id')
+            ->toArray();
+
+        DB::table('ventas')
+            ->whereIn('id', $idsVentas)
+            ->update([
+                'corte' => 1,
+            ]);
+
+        return response()->file(
+            $ruta,
+            [
+                'Content-Type' =>
+                    'application/pdf',
+
+                'Content-Disposition' =>
+                    'inline; filename="' .
+                    $nombreArchivo .
+                    '"',
+            ]
+        );
+    }
+
+    private function textoPdf($texto)
+    {
+        $convertido = iconv(
+            'UTF-8',
+            'windows-1252//TRANSLIT',
+            $texto
+        );
+
+        return $convertido !== false
+            ? $convertido
+            : $texto;
     }
 }

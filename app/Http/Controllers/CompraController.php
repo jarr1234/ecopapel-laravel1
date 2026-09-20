@@ -468,11 +468,15 @@ class CompraController extends Controller
 
     private function textoPdf($texto)
     {
-        return iconv(
+        $convertido = iconv(
             'UTF-8',
             'windows-1252//TRANSLIT',
             $texto
         );
+
+        return $convertido !== false
+            ? $convertido
+            : $texto;
     }
 
     public function comprobante($id)
@@ -501,33 +505,28 @@ class CompraController extends Controller
             abort(403);
         }
 
-        $detalles = DB::table(
-            'detalle_venta as d'
-        )
-            ->leftJoin(
-                'productos as p',
-                'd.producto_id',
-                '=',
-                'p.id'
-            )
-            ->where(
-                'd.venta_id',
-                $id
-            )
-            ->select(
-                'd.producto_id',
-                'd.precio',
-                'd.cantidad',
-                'p.nombre'
-            )
-            ->get();
+        $rutaPdf = public_path(
+            'tickets/ticket_' . $id . '.pdf'
+        );
 
-        return view(
-            'comprobante',
-            compact(
-                'venta',
-                'detalles'
-            )
+        if (!file_exists($rutaPdf)) {
+            return redirect()
+                ->route('productos')
+                ->with(
+                    'error',
+                    'No se encontró el PDF de esta compra.'
+                );
+        }
+
+        return response()->file(
+            $rutaPdf,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' =>
+                    'inline; filename="ticket_' .
+                    $id .
+                    '.pdf"',
+            ]
         );
     }
 }

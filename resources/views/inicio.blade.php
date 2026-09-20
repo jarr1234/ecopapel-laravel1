@@ -1,135 +1,308 @@
 @extends('layouts.app')
 
-@section('title', 'Ecopapel')
+@section('title', 'Ecopapel | Tu papelería en línea')
 
 @section('content')
 
-<section class="banner">
+<section class="hero">
 
-    <div class="banner-contenido">
+    <div class="hero-contenido">
 
-        <h1>TODO PARA TU PAPELERÍA</h1>
+        <div class="hero-texto">
 
+            <span class="hero-etiqueta">
+                ✏️ Todo para escuela y oficina
+            </span>
+
+            <h1>
+                Todo lo que necesitas para crear, estudiar y trabajar
+            </h1>
+
+            <p>
+                Encuentra productos de papelería, útiles escolares,
+                materiales de oficina y mucho más en un solo lugar.
+            </p>
+
+            <div class="hero-acciones">
+
+                <a href="{{ route('productos') }}" class="btn-principal">
+                    Explorar productos
+                </a>
+
+                @guest
+                <a href="{{ route('registro') }}" class="btn-secundario">
+                    Crear una cuenta
+                </a>
+                @endguest
+
+            </div>
+
+        </div>
+
+        <div class="hero-visual">
+
+            <div class="hero-iconos">
+                <span>📚</span>
+                <span>✏️</span>
+                <span>📒</span>
+                <span>🎨</span>
+            </div>
+
+            <div class="hero-mensaje">
+                <strong>Encuentra tus favoritos</strong>
+                <span>Escolar · Oficina · Creatividad</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="beneficios">
+
+    <div class="beneficio">
+        <span>🛍️</span>
+        <div>
+            <strong>Compra fácil</strong>
+            <p>Encuentra rápidamente lo que necesitas.</p>
+        </div>
+    </div>
+
+    <div class="beneficio">
+        <span>📚</span>
+        <div>
+            <strong>Gran variedad</strong>
+            <p>Productos para escuela, oficina y creatividad.</p>
+        </div>
+    </div>
+
+    <div class="beneficio">
+        <span>💚</span>
+        <div>
+            <strong>Atención cercana</strong>
+            <p>Una experiencia de compra sencilla y confiable.</p>
+        </div>
+    </div>
+
+</section>
+
+<section class="seccion-categorias">
+
+    <div class="encabezado-seccion">
+        <span class="subtitulo-seccion">Encuentra lo que buscas</span>
+        <h2>Explora por categoría</h2>
         <p>
-            Encuentra productos escolares, oficina y mucho más
+            Elige una categoría y descubre nuestros productos.
         </p>
+    </div>
 
-        <a href="{{ route('productos') }}" class="btn">
-            Ver productos
+    <div class="categorias">
+
+        <a
+            href="{{ route('productos', ['categoria' => 1]) }}"
+            class="categoria-card"
+        >
+            <span class="categoria-icono">📒</span>
+            <div>
+                <strong>Cuadernos</strong>
+                <small>Para clases y apuntes</small>
+            </div>
+            <span class="categoria-flecha">→</span>
+        </a>
+
+        <a
+            href="{{ route('productos', ['categoria' => 2]) }}"
+            class="categoria-card"
+        >
+            <span class="categoria-icono">✂️</span>
+            <div>
+                <strong>Manualidades</strong>
+                <small>Crea algo increíble</small>
+            </div>
+            <span class="categoria-flecha">→</span>
+        </a>
+
+        <a
+            href="{{ route('productos', ['categoria' => 3]) }}"
+            class="categoria-card"
+        >
+            <span class="categoria-icono">✏️</span>
+            <div>
+                <strong>Escritura</strong>
+                <small>Escribe tus ideas</small>
+            </div>
+            <span class="categoria-flecha">→</span>
+        </a>
+
+        <a
+            href="{{ route('productos', ['categoria' => 4]) }}"
+            class="categoria-card"
+        >
+            <span class="categoria-icono">📎</span>
+            <div>
+                <strong>Oficina</strong>
+                <small>Organiza tu espacio</small>
+            </div>
+            <span class="categoria-flecha">→</span>
         </a>
 
     </div>
 
 </section>
 
-<section class="categorias">
+<section class="seccion-destacados">
 
-    <a href="{{ route('productos', ['categoria' => 1]) }}">
-        📒 Cuadernos
-    </a>
+    <div class="encabezado-seccion encabezado-productos">
 
-    <a href="{{ route('productos', ['categoria' => 2]) }}">
-        ✂ Manualidades
-    </a>
+        <div>
+            <span class="subtitulo-seccion">Nuestros favoritos</span>
+            <h2>Productos destacados</h2>
+            <p>
+                Una selección de productos que pueden interesarte.
+            </p>
+        </div>
 
-    <a href="{{ route('productos', ['categoria' => 3]) }}">
-        ✏ Escritura
-    </a>
+        <a href="{{ route('productos') }}" class="ver-todos">
+            Ver todos los productos →
+        </a>
 
-    <a href="{{ route('productos', ['categoria' => 4]) }}">
-        🖇 Oficina
-    </a>
+    </div>
+
+    <div class="productos-destacados">
+
+        <article class="producto-card">
+
+            <div class="producto-imagen">
+                <img
+                    src="{{ asset('imagenes/1776834195_imagen_2026-04-21_230309933.png') }}"
+                    alt="Lapiceros"
+                >
+            </div>
+
+            <div class="producto-info">
+                <span class="producto-categoria">Escritura</span>
+                <h3>Lapiceros</h3>
+                <p class="precio">$15.00</p>
+
+                <a href="{{ route('productos') }}" class="btn-producto">
+                    Ver producto
+                </a>
+            </div>
+
+        </article>
+
+        <article class="producto-card">
+
+            <div class="producto-imagen">
+                <img
+                    src="{{ asset('imagenes/1776834356_imagen_2026-04-21_230549334.png') }}"
+                    alt="Portaminas"
+                >
+            </div>
+
+            <div class="producto-info">
+                <span class="producto-categoria">Escritura</span>
+                <h3>Portaminas</h3>
+                <p class="precio">$20.00</p>
+
+                <a href="{{ route('productos') }}" class="btn-producto">
+                    Ver producto
+                </a>
+            </div>
+
+        </article>
+
+        <article class="producto-card">
+
+            <div class="producto-imagen">
+                <img
+                    src="{{ asset('imagenes/1777005375_imagen_2026-04-23_223434115.png') }}"
+                    alt="Diccionario Básico"
+                >
+            </div>
+
+            <div class="producto-info">
+                <span class="producto-categoria">Escolar</span>
+                <h3>Diccionario Básico</h3>
+                <p class="precio">$120.00</p>
+
+                <a href="{{ route('productos') }}" class="btn-producto">
+                    Ver producto
+                </a>
+            </div>
+
+        </article>
+
+        <article class="producto-card">
+
+            <div class="producto-imagen">
+                <img
+                    src="{{ asset('imagenes/1777005249_imagen_2026-04-23_223228661.png') }}"
+                    alt="Globos de colores"
+                >
+            </div>
+
+            <div class="producto-info">
+                <span class="producto-categoria">Manualidades</span>
+                <h3>Globos de colores</h3>
+                <p class="precio">$65.00</p>
+
+                <a href="{{ route('productos') }}" class="btn-producto">
+                    Ver producto
+                </a>
+            </div>
+
+        </article>
+
+    </div>
 
 </section>
 
-<h2 class="titulo">
-    🔥 Productos destacados
-</h2>
+<section class="cta-final">
 
-<section class="productos">
-
-    <div class="card">
-
-        <img
-            src="{{ asset('imagenes/1776834195_imagen_2026-04-21_230309933.png') }}"
-            alt="Lapiceros"
-        >
-
-        <h3>Lapiceros</h3>
-
-        <p class="precio">
-            $15.00
+    <div>
+        <span>ECOPAPEL</span>
+        <h2>¿Listo para encontrar lo que necesitas?</h2>
+        <p>
+            Explora nuestro catálogo y descubre todos nuestros productos.
         </p>
-
-        <a href="{{ route('productos') }}" class="boton-card">
-            Comprar
-        </a>
-
     </div>
 
-    <div class="card">
-
-        <img
-            src="{{ asset('imagenes/1776834356_imagen_2026-04-21_230549334.png') }}"
-            alt="Portaminas"
-        >
-
-        <h3>Portaminas</h3>
-
-        <p class="precio">
-            $20.00
-        </p>
-
-        <a href="{{ route('productos') }}" class="boton-card">
-            Comprar
-        </a>
-
-    </div>
-
-    <div class="card">
-
-        <img
-            src="{{ asset('imagenes/1777005375_imagen_2026-04-23_223434115.png') }}"
-            alt="Diccionario Básico"
-        >
-
-        <h3>Diccionario Básico</h3>
-
-        <p class="precio">
-            $120.00
-        </p>
-
-        <a href="{{ route('productos') }}" class="boton-card">
-            Comprar
-        </a>
-
-    </div>
-
-    <div class="card">
-
-        <img
-            src="{{ asset('imagenes/1777005249_imagen_2026-04-23_223228661.png') }}"
-            alt="Globos de colores"
-        >
-
-        <h3>Globos de colores</h3>
-
-        <p class="precio">
-            $65.00
-        </p>
-
-        <a href="{{ route('productos') }}" class="boton-card">
-            Comprar
-        </a>
-
-    </div>
+    <a href="{{ route('productos') }}" class="btn-cta">
+        Ver catálogo
+    </a>
 
 </section>
 
 <footer class="footer">
-    <p>
-        © 2026 Ecopapel | Todos los derechos reservados
-    </p>
+
+    <div class="footer-contenido">
+
+        <div class="footer-marca">
+            <strong>Ecopapel</strong>
+            <p>
+                Papelería para estudiar, trabajar y crear.
+            </p>
+        </div>
+
+        <div class="footer-enlaces">
+            <a href="{{ route('inicio') }}">Inicio</a>
+            <a href="{{ route('productos') }}">Productos</a>
+
+            @if(session('usuario'))
+                <a href="{{ route('carrito') }}">Carrito</a>
+            @else
+                <a href="{{ route('login') }}">Mi cuenta</a>
+            @endif
+        </div>
+
+    </div>
+
+    <div class="footer-inferior">
+        <p>© 2026 Ecopapel. Todos los derechos reservados.</p>
+    </div>
+
 </footer>
 
 @endsection

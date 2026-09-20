@@ -1,86 +1,30 @@
 @extends('layouts.admin')
 
-@section('title', 'Cortes | Ecopapel Admin')
+@section('title', 'Historial de Cortes | Ecopapel Admin')
 
 @section('content')
 
 <div class="admin-header">
-    <h1>📄 Cortes de ventas</h1>
-    <p>Consulta el resumen de ventas de Ecopapel</p>
+    <div>
+        <h1>📄 Historial de Cortes</h1>
+        <p>Consulta los cortes de ventas generados</p>
+    </div>
 </div>
 
-<div class="admin-formulario">
+<div class="acciones-ventas-superior">
 
-    <h2>📅 Filtrar por fecha</h2>
-
-    <form action="{{ route('admin.cortes') }}" method="GET">
-
-        <div class="form-group">
-            <label for="desde">Desde</label>
-
-            <input
-                type="date"
-                id="desde"
-                name="desde"
-                value="{{ $desde }}"
-            >
-        </div>
-
-        <div class="form-group">
-            <label for="hasta">Hasta</label>
-
-            <input
-                type="date"
-                id="hasta"
-                name="hasta"
-                value="{{ $hasta }}"
-            >
-        </div>
-
-        <button type="submit" class="btn-admin">
-            🔍 Consultar corte
-        </button>
-
-        <a href="{{ route('admin.cortes') }}" class="btn-admin btn-rojo">
-            Limpiar
-        </a>
-
-    </form>
-
-</div>
-
-<div class="cards">
-
-    <div class="card">
-        <h2>{{ $totalVentas }}</h2>
-        <p>Ventas realizadas</p>
-    </div>
-
-    <div class="card">
-        <h2>${{ number_format($totalDinero, 2) }}</h2>
-        <p>Total vendido</p>
-    </div>
-
-    <div class="card">
-        <h2>${{ number_format($totalEfectivo, 2) }}</h2>
-        <p>💵 Efectivo</p>
-    </div>
-
-    <div class="card">
-        <h2>${{ number_format($totalTarjeta, 2) }}</h2>
-        <p>💳 Tarjeta</p>
-    </div>
-
-    <div class="card">
-        <h2>${{ number_format($totalTransferencia, 2) }}</h2>
-        <p>🏦 Transferencia</p>
-    </div>
+    <a
+        href="{{ route('admin.ventas') }}"
+        class="btn-admin"
+    >
+        ⬅ Volver a Ventas
+    </a>
 
 </div>
 
 <div class="admin-tabla">
 
-    <h2>🧾 Detalle del corte</h2>
+    <h2>📚 Cortes guardados</h2>
 
     <div class="tabla-responsive">
 
@@ -88,48 +32,45 @@
 
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Total</th>
-                    <th>Método de pago</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
+                    <th>Archivo</th>
+                    <th>Fecha de generación</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
 
             <tbody>
 
-                @forelse($ventas as $venta)
+                @forelse($cortes as $corte)
 
                     <tr>
-                        <td>{{ $venta->id }}</td>
 
                         <td>
-                            {{ $venta->usuario }}
+                            {{ $corte['nombre'] }}
                         </td>
 
                         <td>
-                            ${{ number_format($venta->total, 2) }}
+                            {{ $corte['fecha'] }}
                         </td>
 
                         <td>
-                            {{ $venta->metodo_pago }}
+
+                            <a
+                                href="{{ route('admin.cortes.ver', ['archivo' => $corte['nombre']]) }}"
+                                target="_blank"
+                                class="btn-pdf-admin"
+                            >
+                                📄 Ver PDF
+                            </a>
+
                         </td>
 
-                        <td>
-                            {{ $venta->fecha }}
-                        </td>
-
-                        <td>
-                            {{ ucfirst($venta->estado ?? 'pendiente') }}
-                        </td>
                     </tr>
 
                 @empty
 
                     <tr>
-                        <td colspan="6">
-                            No hay ventas en este periodo.
+                        <td colspan="3">
+                            No hay cortes generados todavía.
                         </td>
                     </tr>
 

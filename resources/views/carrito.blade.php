@@ -4,101 +4,182 @@
 
 @section('content')
 
-<div class="carrito-container">
+<section class="pagina-carrito">
 
-    <h2>🛒 Mi carrito</h2>
-
-    @forelse($items as $item)
-
-        <div class="carrito-item">
-
-            <div class="carrito-imagen">
-                <img
-                    src="{{ asset($item->imagen) }}"
-                    alt="{{ $item->nombre }}"
-                    class="carrito-img"
-                >
-            </div>
-
-            <div class="carrito-info">
-
-                <h3>{{ $item->nombre }}</h3>
-
-                <p>
-                    💵 Precio:
-                    ${{ number_format($item->precio, 2) }}
-                </p>
-
-                <p>
-                    📦 Cantidad:
-                    {{ $item->cantidad }}
-                </p>
-
-                <p>
-                    💰 Subtotal:
-                    ${{ number_format($item->subtotal, 2) }}
-                </p>
-
-            </div>
-
-            <form
-                method="POST"
-                action="{{ route('carrito.eliminar', $item->id) }}"
-            >
-                @csrf
-                @method('DELETE')
-
-                <button
-                    type="submit"
-                    class="btn-eliminar"
-                    title="Eliminar producto"
-                >
-                    ✖
-                </button>
-            </form>
-
-        </div>
-
-    @empty
-
-        <div class="carrito-vacio">
-            <p>😢 Tu carrito está vacío</p>
-
-            <a href="{{ route('productos') }}" class="btn-comprar">
-                Ver productos
-            </a>
-        </div>
-
-    @endforelse
+    <div class="carrito-encabezado">
+        <span class="carrito-etiqueta">Tu compra</span>
+        <h1>Mi carrito</h1>
+        <p>Revisa los productos que agregaste antes de continuar con tu compra.</p>
+    </div>
 
     @if($items->isNotEmpty())
 
-        <div class="total">
-            💰 Total: ${{ number_format($total, 2) }}
+        <div class="carrito-layout">
+
+            <div class="carrito-lista">
+
+                @foreach($items as $item)
+
+                    <article class="carrito-producto">
+
+                        <div class="carrito-imagen">
+
+                            @if(!empty($item->imagen))
+
+                                <img
+                                    src="{{ asset(ltrim(trim($item->imagen), '/')) }}"
+                                    alt="{{ $item->nombre }}"
+                                >
+
+                            @else
+
+                                <div class="carrito-sin-imagen">
+                                    📦
+                                </div>
+
+                            @endif
+
+                        </div>
+
+                        <div class="carrito-info">
+
+                            <h2>{{ $item->nombre }}</h2>
+
+                            <div class="carrito-detalles">
+
+                                <p>
+                                    Precio
+                                    <strong>
+                                        ${{ number_format($item->precio, 2) }}
+                                    </strong>
+                                </p>
+
+                                <p>
+                                    Cantidad
+                                    <strong>
+                                        {{ $item->cantidad }}
+                                    </strong>
+                                </p>
+
+                            </div>
+
+                            <div class="carrito-subtotal">
+                                <span>Subtotal</span>
+
+                                <strong>
+                                    ${{ number_format($item->subtotal, 2) }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                        <form
+                            method="POST"
+                            action="{{ route('carrito.eliminar', $item->id) }}"
+                            class="form-eliminar-producto"
+                        >
+                            @csrf
+                            @method('DELETE')
+
+                            <button
+                                type="submit"
+                                class="btn-eliminar"
+                                title="Eliminar producto"
+                                aria-label="Eliminar {{ $item->nombre }}"
+                            >
+                                ✕
+                            </button>
+
+                        </form>
+
+                    </article>
+
+                @endforeach
+
+            </div>
+
+            <aside class="resumen-compra">
+
+                <span class="resumen-etiqueta">
+                    Resumen
+                </span>
+
+                <h2>Resumen de compra</h2>
+
+                <div class="resumen-linea">
+                    <span>Productos</span>
+                    <strong>{{ $items->sum('cantidad') }}</strong>
+                </div>
+
+                <div class="resumen-total">
+                    <span>Total</span>
+
+                    <strong>
+                        ${{ number_format($total, 2) }}
+                    </strong>
+                </div>
+
+                <a
+                    href="{{ route('comprar') }}"
+                    class="btn-finalizar-compra"
+                >
+                    Continuar con la compra
+                </a>
+
+                <a
+                    href="{{ route('productos') }}"
+                    class="seguir-comprando"
+                >
+                    ← Seguir comprando
+                </a>
+
+                <form
+                    method="POST"
+                    action="{{ route('carrito.vaciar') }}"
+                    class="form-vaciar-carrito"
+                >
+                    @csrf
+                    @method('DELETE')
+
+                    <button
+                        type="submit"
+                        class="btn-vaciar"
+                    >
+                        🗑 Vaciar carrito
+                    </button>
+
+                </form>
+
+            </aside>
+
         </div>
 
-        <div class="carrito-acciones">
+    @else
 
-            <a href="{{ route('comprar') }}" class="btn-comprar">
-                💳 Comprar
-            </a>
+        <div class="carrito-vacio">
 
-            <form
-                method="POST"
-                action="{{ route('carrito.vaciar') }}"
+            <div class="carrito-vacio-icono">
+                🛒
+            </div>
+
+            <h2>Tu carrito está vacío</h2>
+
+            <p>
+                Todavía no has agregado productos.
+                Explora nuestro catálogo y encuentra lo que necesitas.
+            </p>
+
+            <a
+                href="{{ route('productos') }}"
+                class="btn-ver-productos"
             >
-                @csrf
-                @method('DELETE')
-
-                <button type="submit" class="btn-vaciar">
-                    🗑 Vaciar carrito
-                </button>
-            </form>
+                Explorar productos
+            </a>
 
         </div>
 
     @endif
 
-</div>
+</section>
 
 @endsection

@@ -4,77 +4,142 @@
 
 @section('content')
 
-<div class="login-container">
+<section class="pagina-acceso">
 
-    <div class="login-card">
+    <div class="acceso-layout">
 
-        <div class="login-icon">
-            🔐
+        <div class="acceso-presentacion">
+
+            <div class="acceso-marca">
+                <img
+                    src="{{ asset('imagenes/logo2.png') }}"
+                    alt="Ecopapel"
+                >
+                <span>Ecopapel</span>
+            </div>
+
+            <h1>
+                Verifica tu cuenta
+            </h1>
+
+            <p>
+                Solo falta un paso para activar tu cuenta
+                y comenzar a comprar en Ecopapel.
+            </p>
+
+            <div class="acceso-beneficios">
+
+                <div>
+                    <span>🔐</span>
+                    <p>Verificación de tu cuenta</p>
+                </div>
+
+                <div>
+                    <span>🛒</span>
+                    <p>Acceso a tu carrito</p>
+                </div>
+
+                <div>
+                    <span>📦</span>
+                    <p>Realiza tus pedidos fácilmente</p>
+                </div>
+
+            </div>
+
         </div>
 
-        <h1>Verificar cuenta</h1>
+        <div class="acceso-formulario">
 
-        <p class="login-subtitulo">
-            Ingresa el código para activar tu cuenta
-        </p>
+            <div class="login-card">
 
-        @if(session('codigo'))
+                <span class="login-etiqueta">
+                    Verificación
+                </span>
 
-            <div class="mensaje mensaje-ok">
-                Tu código es:
-                <strong>{{ session('codigo') }}</strong>
-            </div>
+                <h2>Ingresa tu código</h2>
 
-        @endif
+                <p class="login-subtitulo">
+                    Escribe el código para activar tu cuenta.
+                </p>
 
-        <form
-            action="{{ route('verificar.post') }}"
-            method="POST"
-            class="login-form"
-        >
+                @if(session('codigo'))
 
-            @csrf
+                    <div class="codigo-verificacion">
 
-            <input
-                type="hidden"
-                name="usuario"
-                value="{{ $usuario }}"
-            >
+                        <span>
+                            Tu código de verificación es
+                        </span>
 
-            <div class="login-grupo">
+                        <strong>
+                            {{ session('codigo') }}
+                        </strong>
 
-                <label for="codigo">
-                    Código de verificación
-                </label>
+                    </div>
 
-                <input
-                    type="text"
-                    id="codigo"
-                    name="codigo"
-                    value="{{ old('codigo') }}"
-                    placeholder="Ingresa el código"
-                    inputmode="numeric"
-                    maxlength="6"
-                    required
-                    autofocus
+                @endif
+
+                <form
+                    action="{{ route('verificar.post') }}"
+                    method="POST"
+                    class="login-form"
                 >
 
-                @error('codigo')
-                    <span class="form-error">
-                        {{ $message }}
-                    </span>
-                @enderror
+                    @csrf
+
+                    <input
+                        type="hidden"
+                        name="usuario"
+                        value="{{ $usuario }}"
+                    >
+
+                    <div class="login-grupo">
+
+                        <label for="codigo">
+                            Código de verificación
+                        </label>
+
+                        <input
+                            type="text"
+                            id="codigo"
+                            name="codigo"
+                            value="{{ old('codigo') }}"
+                            placeholder="Ingresa el código de 6 dígitos"
+                            inputmode="numeric"
+                            maxlength="6"
+                            required
+                            autofocus
+                        >
+
+                        @error('codigo')
+                            <span class="form-error">
+                                {{ $message }}
+                            </span>
+                        @enderror
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="login-btn"
+                    >
+                        Verificar cuenta
+                    </button>
+
+                </form>
+
+                <a
+                    href="{{ route('login') }}"
+                    class="acceso-volver"
+                >
+                    ← Volver a iniciar sesión
+                </a>
 
             </div>
 
-            <button type="submit" class="login-btn">
-                ✅ Verificar cuenta
-            </button>
-
-        </form>
+        </div>
 
     </div>
 
-</div>
+</section>
 
 @endsection

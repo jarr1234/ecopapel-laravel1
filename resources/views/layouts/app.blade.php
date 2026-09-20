@@ -19,126 +19,151 @@
 
 <header class="header">
 
-    <div class="logo">
-        <a href="{{ route('inicio') }}">
-            <img src="{{ asset('imagenes/logo2.png') }}" alt="Ecopapel">
-        </a>
+    <div class="header-contenido">
 
-        <span>Ecopapel</span>
-    </div>
+        <a href="{{ route('inicio') }}" class="marca">
 
-    <form
-        action="{{ route('productos') }}"
-        method="GET"
-        class="form-busqueda"
-    >
-        @if(session('usuario'))
-
-            <input
-                type="text"
-                name="buscar"
-                placeholder="Buscar productos..."
-                class="buscador"
-                value="{{ request('buscar') }}"
+            <img
+                src="{{ asset('imagenes/logo2.png') }}"
+                alt="Logo de Ecopapel"
+                class="marca-logo"
             >
 
-            <button type="submit" class="btn-buscar">
-                🔍
-            </button>
+            <div class="marca-texto">
+                <strong>Ecopapel</strong>
+                <small>Tu papelería en línea</small>
+            </div>
 
-        @else
+        </a>
 
-            <a href="{{ route('login') }}" class="btn-login">
-                🔒 Inicia sesión para buscar
-            </a>
+        <div class="header-centro">
 
-        @endif
-    </form>
+            <form
+                action="{{ route('productos') }}"
+                method="GET"
+                class="form-busqueda"
+            >
 
-    <nav class="acciones">
+                <input
+                    type="text"
+                    name="buscar"
+                    placeholder="Buscar productos..."
+                    class="buscador"
+                    value="{{ request('buscar') }}"
+                >
 
-        @if(session('usuario'))
+                <button
+                    type="submit"
+                    class="btn-buscar"
+                    aria-label="Buscar"
+                >
+                    🔍
+                </button>
 
-            @if(session('rol') === 'admin')
+            </form>
 
-                <a href="{{ route('admin') }}">
-                    ⚙️ Panel
-                </a>
+        </div>
 
-                <a href="{{ route('admin.productos') }}">
-                    📦 Productos
-                </a>
+        <nav class="acciones">
 
-                <a href="{{ route('admin.usuarios') }}">
-                    👥 Usuarios
-                </a>
+            @if(session('usuario'))
 
-                <span>
-                    👑 {{ session('usuario') }}
-                </span>
+                @if(session('rol') === 'admin')
+
+                    <a href="{{ route('admin') }}">
+                        Panel
+                    </a>
+
+                    <a href="{{ route('admin.productos') }}">
+                        Productos
+                    </a>
+
+                    <a href="{{ route('admin.usuarios') }}">
+                        Usuarios
+                    </a>
+
+                    <span class="usuario-header">
+                        👤 {{ session('usuario') }}
+                    </span>
+
+                @else
+
+                    <a href="{{ route('inicio') }}">
+                        Inicio
+                    </a>
+
+                    <a href="{{ route('productos') }}">
+                        Productos
+                    </a>
+
+                    <a
+                        href="{{ route('carrito') }}"
+                        class="carrito-header"
+                    >
+                        🛒 Carrito
+                    </a>
+
+                    <span class="usuario-header">
+                        👤 {{ session('usuario') }}
+                    </span>
+
+                @endif
+
+                <form
+                    method="POST"
+                    action="{{ route('logout') }}"
+                    class="form-logout"
+                >
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="cerrar"
+                    >
+                        Salir
+                    </button>
+
+                </form>
 
             @else
 
                 <a href="{{ route('inicio') }}">
-                    🏠 Inicio
+                    Inicio
                 </a>
 
                 <a href="{{ route('productos') }}">
-                    📦 Productos
+                    Productos
                 </a>
 
-                <a href="{{ route('carrito') }}">
-                    🛒 Carrito
+                <a
+                    href="{{ route('login') }}"
+                    class="cuenta-header"
+                >
+                    👤 Cuenta
                 </a>
-
-                <span>
-                    👤 {{ session('usuario') }}
-                </span>
 
             @endif
 
-            <form
-                method="POST"
-                action="{{ route('logout') }}"
-                class="form-logout"
-            >
-                @csrf
+        </nav>
 
-                <button type="submit" class="cerrar">
-                    🚪 Cerrar sesión
-                </button>
-            </form>
-
-        @else
-
-            <a href="{{ route('inicio') }}">
-                🏠 Inicio
-            </a>
-
-            <a href="{{ route('productos') }}">
-                📦 Productos
-            </a>
-
-            <a href="{{ route('login') }}">
-                👤 Cuenta
-            </a>
-
-        @endif
-
-    </nav>
+    </div>
 
 </header>
 
 @if(session('error'))
+
     <div class="mensaje mensaje-error">
         {{ session('error') }}
     </div>
+
 @endif
 
 @if(session('ok'))
+
     <div class="mensaje mensaje-ok">
         {{ session('ok') }}
     </div>
+
 @endif
 
 <main>
