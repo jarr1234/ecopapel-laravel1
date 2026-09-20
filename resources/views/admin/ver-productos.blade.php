@@ -4,161 +4,268 @@
 
 @section('content')
 
-<div class="admin-header">
+<section class="admin-page">
 
-    <div>
-        <h1>📦 Panel de Productos</h1>
-        <p>Consulta y administra todos los productos de Ecopapel</p>
+    <div class="admin-page-header">
+
+        <div class="admin-page-heading">
+            <span class="admin-page-label">CATÁLOGO</span>
+            <h1>📦 Catálogo de productos</h1>
+            <p>Consulta, busca, edita y administra los productos de Ecopapel.</p>
+        </div>
+
+        <div class="admin-page-actions">
+
+            <a href="{{ route('admin') }}" class="admin-secondary-button">
+                ← Panel
+            </a>
+
+            <a href="{{ route('admin.productos') }}" class="admin-primary-button">
+                ➕ Agregar producto
+            </a>
+
+        </div>
+
     </div>
 
-    <div class="acciones-top">
+    <div class="admin-search-card">
 
-        <a href="{{ route('admin') }}" class="btn-volver-admin">
-            ⬅ Volver
-        </a>
-
-        <a href="{{ route('admin.productos') }}" class="btn-agregar-admin">
-            ➕ Agregar producto
-        </a>
-
-    </div>
-
-</div>
-
-<div class="buscar-admin">
-
-    <form action="{{ route('admin.productos.ver') }}" method="GET">
-
-        <input
-            type="text"
-            name="buscar"
-            value="{{ request('buscar') }}"
-            placeholder="🔍 Buscar por nombre, descripción, categoría o precio..."
+        <form
+            action="{{ route('admin.productos.ver') }}"
+            method="GET"
+            class="admin-search-form"
         >
 
-        <button type="submit" class="btn-admin">
-            🔍 Buscar
-        </button>
+            <div class="admin-search-input">
 
-        <a href="{{ route('admin.productos.ver') }}" class="btn-admin btn-rojo">
-            Limpiar
-        </a>
+                <span>🔍</span>
 
-    </form>
-
-</div>
-
-<div class="productos-admin-grid">
-
-    @forelse($productos as $producto)
-
-        <div class="producto-admin-card">
-
-            <div class="producto-admin-imagen">
-
-                @if(!empty($producto->imagen))
-
-                    <img
-                        src="{{ asset(trim($producto->imagen)) }}"
-                        alt="{{ $producto->nombre }}"
-                        class="img-producto-admin"
-                        loading="lazy"
-                    >
-
-                @else
-
-                    <div class="sin-imagen">
-                        <span>📦</span>
-                        <p>Sin imagen</p>
-                    </div>
-
-                @endif
+                <input
+                    type="text"
+                    name="buscar"
+                    value="{{ request('buscar') }}"
+                    placeholder="Buscar por nombre, descripción, categoría o precio..."
+                >
 
             </div>
 
-            <div class="producto-admin-info">
+            <button type="submit" class="admin-search-button">
+                Buscar
+            </button>
 
-                <h2>
-                    {{ $producto->nombre }}
-                </h2>
+            @if(request('buscar'))
+                <a
+                    href="{{ route('admin.productos.ver') }}"
+                    class="admin-clear-button"
+                >
+                    ✕ Limpiar
+                </a>
+            @endif
 
-                <p class="producto-categoria">
-                    📁 {{ $producto->categoria ?? 'Sin categoría' }}
-                </p>
+        </form>
 
-                <p class="producto-descripcion">
-                    {{ $producto->descripcion ?: 'Sin descripción' }}
-                </p>
+        @if(request('buscar'))
 
-                <div class="producto-datos">
+            <div class="admin-search-result">
 
-                    <span class="producto-precio">
-                        💲 ${{ number_format($producto->precio, 2) }}
+                <span>
+                    Resultados para:
+                    <strong>{{ request('buscar') }}</strong>
+                </span>
+
+                <span class="admin-count-badge">
+                    {{ $productos->count() }}
+                    {{ $productos->count() === 1 ? 'producto' : 'productos' }}
+                </span>
+
+            </div>
+
+        @endif
+
+    </div>
+
+    <div class="admin-catalog-header">
+
+        <div>
+            <h2>Productos registrados</h2>
+            <p>Administra la información, precio y disponibilidad del catálogo.</p>
+        </div>
+
+        <span class="admin-count-badge">
+            {{ $productos->count() }}
+            {{ $productos->count() === 1 ? 'producto' : 'productos' }}
+        </span>
+
+    </div>
+
+    <div class="admin-products-grid">
+
+        @forelse($productos as $producto)
+
+            <article class="admin-product-card">
+
+                <div class="admin-product-image">
+
+                    @if(!empty($producto->imagen))
+
+                        <img
+                            src="{{ asset(trim($producto->imagen)) }}"
+                            alt="{{ $producto->nombre }}"
+                            loading="lazy"
+                        >
+
+                    @else
+
+                        <div class="admin-no-image">
+                            <span>📦</span>
+                            <p>Sin imagen</p>
+                        </div>
+
+                    @endif
+
+                    <span class="admin-product-id">
+                        #{{ $producto->id }}
                     </span>
 
                     @if($producto->stock > 0)
 
-                        <span class="producto-stock">
-                            📦 Stock: {{ $producto->stock }}
+                        <span class="admin-product-status admin-product-available">
+                            Disponible
                         </span>
 
                     @else
 
-                        <span class="producto-agotado">
-                            ❌ Agotado
+                        <span class="admin-product-status admin-product-soldout">
+                            Agotado
                         </span>
 
                     @endif
 
                 </div>
 
-                <div class="producto-admin-acciones">
+                <div class="admin-product-content">
 
-                    <a
-                        href="{{ route('admin.productos.editar', $producto->id) }}"
-                        class="btn-editar-admin"
-                    >
-                        ✏ Editar
-                    </a>
+                    <div class="admin-product-category">
+                        {{ $producto->categoria ?? 'Sin categoría' }}
+                    </div>
 
-                    <form
-                        action="{{ route('admin.productos.eliminar', $producto->id) }}"
-                        method="POST"
-                        onsubmit="return confirm('¿Seguro que deseas eliminar este producto?')"
-                    >
+                    <h2>{{ $producto->nombre }}</h2>
 
-                        @csrf
-                        @method('DELETE')
+                    <p class="admin-product-description">
+                        {{ $producto->descripcion ?: 'Este producto no tiene descripción.' }}
+                    </p>
 
-                        <button
-                            type="submit"
-                            class="btn-eliminar-admin"
+                    <div class="admin-product-details">
+
+                        <div>
+                            <span>Precio</span>
+
+                            <strong class="admin-product-price">
+                                ${{ number_format($producto->precio, 2) }}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Inventario</span>
+
+                            @if($producto->stock > 0)
+
+                                <strong class="admin-product-stock">
+                                    {{ $producto->stock }} unidades
+                                </strong>
+
+                            @else
+
+                                <strong class="admin-product-stock-empty">
+                                    Sin existencias
+                                </strong>
+
+                            @endif
+                        </div>
+
+                    </div>
+
+                    <div class="admin-product-actions">
+
+                        <a
+                            href="{{ route('admin.productos.editar', $producto->id) }}"
+                            class="admin-edit-button"
                         >
-                            🗑 Eliminar
-                        </button>
+                            ✏️ Editar
+                        </a>
 
-                    </form>
+                        <form
+                            action="{{ route('admin.productos.eliminar', $producto->id) }}"
+                            method="POST"
+                            onsubmit="return confirm('¿Seguro que deseas eliminar este producto?')"
+                        >
+
+                            @csrf
+                            @method('DELETE')
+
+                            <button
+                                type="submit"
+                                class="admin-delete-button"
+                            >
+                                🗑️ Eliminar
+                            </button>
+
+                        </form>
+
+                    </div>
 
                 </div>
 
+            </article>
+
+        @empty
+
+            <div class="admin-empty-state admin-empty-products">
+
+                <span>🔎</span>
+
+                <strong>
+                    @if(request('buscar'))
+                        No encontramos productos
+                    @else
+                        No hay productos registrados
+                    @endif
+                </strong>
+
+                <p>
+                    @if(request('buscar'))
+                        No hay resultados que coincidan con “{{ request('buscar') }}”.
+                    @else
+                        Cuando agregues productos aparecerán en esta sección.
+                    @endif
+                </p>
+
+                @if(request('buscar'))
+
+                    <a
+                        href="{{ route('admin.productos.ver') }}"
+                        class="admin-secondary-button"
+                    >
+                        Mostrar todos
+                    </a>
+
+                @else
+
+                    <a
+                        href="{{ route('admin.productos') }}"
+                        class="admin-primary-button"
+                    >
+                        ➕ Agregar producto
+                    </a>
+
+                @endif
+
             </div>
 
-        </div>
+        @endforelse
 
-    @empty
+    </div>
 
-        <div class="sin-resultados">
-
-            <h2>😕 No se encontraron productos</h2>
-
-            <p>
-                No hay productos que coincidan con la búsqueda.
-            </p>
-
-        </div>
-
-    @endforelse
-
-</div>
+</section>
 
 @endsection

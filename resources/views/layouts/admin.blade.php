@@ -23,7 +23,10 @@
         <a href="{{ route('admin') }}" class="admin-marca">
 
             <div class="admin-logo">
-                ♻️
+                <img
+                    src="{{ asset('imagenes/logo2.png') }}"
+                    alt="Logo Ecopapel"
+                >
             </div>
 
             <div class="admin-marca-texto">
@@ -35,38 +38,50 @@
 
         <nav class="admin-menu">
 
-            <a href="{{ route('admin') }}"
-               class="{{ request()->routeIs('admin') ? 'activo' : '' }}">
+            <a
+                href="{{ route('admin') }}"
+                class="{{ request()->routeIs('admin') ? 'activo' : '' }}"
+            >
                 <span>▦</span>
                 Panel
             </a>
 
-            <a href="{{ route('admin.productos.ver') }}"
-               class="{{ request()->routeIs('admin.productos*') ? 'activo' : '' }}">
+            <a
+                href="{{ route('admin.productos.ver') }}"
+                class="{{ request()->routeIs('admin.productos*') ? 'activo' : '' }}"
+            >
                 <span>📦</span>
                 Productos
             </a>
 
-            <a href="{{ route('admin.categorias') }}"
-               class="{{ request()->routeIs('admin.categorias*') ? 'activo' : '' }}">
+            <a
+                href="{{ route('admin.categorias') }}"
+                class="{{ request()->routeIs('admin.categorias*') ? 'activo' : '' }}"
+            >
                 <span>🗂️</span>
                 Categorías
             </a>
 
-            <a href="{{ route('admin.usuarios') }}"
-               class="{{ request()->routeIs('admin.usuarios*') ? 'activo' : '' }}">
+            <a
+                href="{{ route('admin.usuarios') }}"
+                class="{{ request()->routeIs('admin.usuarios*') ? 'activo' : '' }}"
+            >
                 <span>👥</span>
                 Usuarios
             </a>
 
-            <a href="{{ route('admin.ventas') }}"
-               class="{{ request()->routeIs('admin.ventas*') ? 'activo' : '' }}">
+            <a
+                href="{{ route('admin.ventas') }}"
+                class="{{ request()->routeIs('admin.ventas*') ? 'activo' : '' }}"
+            >
                 <span>🛒</span>
                 Ventas
             </a>
 
-            <a href="{{ route('admin.cortes') }}"
-               class="{{ request()->routeIs('admin.cortes*') ? 'activo' : '' }}">
+            <a
+                href="{{ route('admin.cortes') }}"
+                class="{{ request()->routeIs('admin.cortes*') ? 'activo' : '' }}"
+            >
                 <span>📄</span>
                 Cortes
             </a>
@@ -87,7 +102,11 @@
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
 
-                <button type="submit" class="admin-btn-salir" title="Cerrar sesión">
+                <button
+                    type="submit"
+                    class="admin-btn-salir"
+                    title="Cerrar sesión"
+                >
                     🚪
                 </button>
             </form>

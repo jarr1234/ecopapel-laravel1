@@ -2,10 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
+
 class InicioController extends Controller
 {
     public function index()
     {
-        return view('inicio');
+        $categorias = DB::table('categorias')
+            ->orderBy('nombre')
+            ->get();
+
+        return view('inicio', [
+            'categorias' => $categorias,
+        ]);
     }
 }

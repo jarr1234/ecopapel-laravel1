@@ -29,11 +29,11 @@
                     Explorar productos
                 </a>
 
-                @guest
-                <a href="{{ route('registro') }}" class="btn-secundario">
-                    Crear una cuenta
-                </a>
-                @endguest
+                @if(!session('usuario'))
+                    <a href="{{ route('registro') }}" class="btn-secundario">
+                        Crear una cuenta
+                    </a>
+                @endif
 
             </div>
 
@@ -99,53 +99,60 @@
 
     <div class="categorias">
 
-        <a
-            href="{{ route('productos', ['categoria' => 1]) }}"
-            class="categoria-card"
-        >
-            <span class="categoria-icono">📒</span>
-            <div>
-                <strong>Cuadernos</strong>
-                <small>Para clases y apuntes</small>
-            </div>
-            <span class="categoria-flecha">→</span>
-        </a>
+        @php
+            $categoriasInicio = [
+                [
+                    'nombre' => 'Cuadernos',
+                    'icono' => '📒',
+                    'descripcion' => 'Para clases y apuntes'
+                ],
+                [
+                    'nombre' => 'Manualidades',
+                    'icono' => '✂️',
+                    'descripcion' => 'Crea algo increíble'
+                ],
+                [
+                    'nombre' => 'Escritura',
+                    'icono' => '✏️',
+                    'descripcion' => 'Escribe tus ideas'
+                ],
+                [
+                    'nombre' => 'Oficina',
+                    'icono' => '📎',
+                    'descripcion' => 'Organiza tu espacio'
+                ]
+            ];
+        @endphp
 
-        <a
-            href="{{ route('productos', ['categoria' => 2]) }}"
-            class="categoria-card"
-        >
-            <span class="categoria-icono">✂️</span>
-            <div>
-                <strong>Manualidades</strong>
-                <small>Crea algo increíble</small>
-            </div>
-            <span class="categoria-flecha">→</span>
-        </a>
+        @foreach($categoriasInicio as $item)
 
-        <a
-            href="{{ route('productos', ['categoria' => 3]) }}"
-            class="categoria-card"
-        >
-            <span class="categoria-icono">✏️</span>
-            <div>
-                <strong>Escritura</strong>
-                <small>Escribe tus ideas</small>
-            </div>
-            <span class="categoria-flecha">→</span>
-        </a>
+            @php
+                $categoriaEncontrada = $categorias->first(function ($categoria) use ($item) {
+                    return strtolower(trim($categoria->nombre)) === strtolower(trim($item['nombre']));
+                });
+            @endphp
 
-        <a
-            href="{{ route('productos', ['categoria' => 4]) }}"
-            class="categoria-card"
-        >
-            <span class="categoria-icono">📎</span>
-            <div>
-                <strong>Oficina</strong>
-                <small>Organiza tu espacio</small>
-            </div>
-            <span class="categoria-flecha">→</span>
-        </a>
+            @if($categoriaEncontrada)
+
+                <a
+                    href="{{ route('productos', ['categoria' => $categoriaEncontrada->id]) }}"
+                    class="categoria-card"
+                >
+                    <span class="categoria-icono">
+                        {{ $item['icono'] }}
+                    </span>
+
+                    <div>
+                        <strong>{{ $item['nombre'] }}</strong>
+                        <small>{{ $item['descripcion'] }}</small>
+                    </div>
+
+                    <span class="categoria-flecha">→</span>
+                </a>
+
+            @endif
+
+        @endforeach
 
     </div>
 

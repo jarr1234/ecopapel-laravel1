@@ -4,151 +4,327 @@
 
 @section('content')
 
-<div class="admin-header">
-    <div>
-        <h1>🛒 Administración de Ventas</h1>
-        <p>Ventas pendientes de corte</p>
+<section class="admin-page">
+
+    <div class="admin-page-header">
+
+        <div class="admin-page-heading">
+            <span class="admin-page-label">VENTAS</span>
+            <h1>🛒 Administración de ventas</h1>
+            <p>Consulta y administra las ventas pendientes de corte.</p>
+        </div>
+
+        <div class="admin-page-actions">
+
+            <a
+                href="{{ route('admin.cortes') }}"
+                class="admin-secondary-button"
+            >
+                📚 Historial de cortes
+            </a>
+
+            <a
+                href="{{ route('admin.cortes.generar') }}"
+                class="admin-primary-button"
+                target="_blank"
+            >
+                📄 Generar corte
+            </a>
+
+        </div>
+
     </div>
-</div>
 
-<div class="acciones-ventas-superior">
+    <div class="admin-sales-summary">
 
-    <a
-        href="{{ route('admin.cortes.generar') }}"
-        class="btn-pdf-admin"
-        target="_blank"
-    >
-        📄 Corte del Día
-    </a>
+        <div class="admin-summary-card">
 
-    <a
-        href="{{ route('admin.cortes') }}"
-        class="btn-admin"
-    >
-        📚 Historial de Cortes
-    </a>
+            <div class="admin-summary-icon">
+                🛒
+            </div>
 
-</div>
+            <div>
+                <span>Ventas pendientes de corte</span>
 
-<div class="admin-tabla">
+                <strong>
+                    {{ $ventas->count() }}
+                </strong>
 
-    <div class="tabla-responsive">
+                <p>Ventas que todavía no forman parte de un corte.</p>
+            </div>
 
-        <table>
+        </div>
 
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Total</th>
-                    <th>Método</th>
-                    <th>Dirección</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>PDF</th>
-                </tr>
-            </thead>
+        <div class="admin-summary-card">
 
-            <tbody>
+            <div class="admin-summary-icon">
+                📦
+            </div>
 
-                @forelse($ventas as $venta)
+            <div>
+                <span>Pendientes de entrega</span>
 
+                <strong>
+                    {{ $ventas->filter(function ($venta) {
+                        return strtolower($venta->estado ?? 'pendiente') !== 'entregado';
+                    })->count() }}
+                </strong>
+
+                <p>Pedidos que todavía deben marcarse como entregados.</p>
+            </div>
+
+        </div>
+
+        <div class="admin-summary-card">
+
+            <div class="admin-summary-icon">
+                ✅
+            </div>
+
+            <div>
+                <span>Entregadas</span>
+
+                <strong>
+                    {{ $ventas->filter(function ($venta) {
+                        return strtolower($venta->estado ?? '') === 'entregado';
+                    })->count() }}
+                </strong>
+
+                <p>Ventas listas para incluirse en el próximo corte.</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="admin-list-card">
+
+        <div class="admin-section-heading admin-section-heading-between">
+
+            <div class="admin-section-title-group">
+
+                <div class="admin-section-icon">
+                    📋
+                </div>
+
+                <div>
+                    <h2>Ventas pendientes de corte</h2>
+                    <p>Revisa el cliente, pago, entrega y comprobante de cada venta.</p>
+                </div>
+
+            </div>
+
+            <span class="admin-count-badge">
+                {{ $ventas->count() }}
+                {{ $ventas->count() === 1 ? 'venta' : 'ventas' }}
+            </span>
+
+        </div>
+
+        <div class="tabla-responsive">
+
+            <table class="admin-modern-table admin-sales-table">
+
+                <thead>
                     <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Total</th>
+                        <th>Método</th>
+                        <th>Dirección</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Comprobante</th>
+                    </tr>
+                </thead>
 
-                        <td>
-                            {{ $venta->id }}
-                        </td>
+                <tbody>
 
-                        <td>
-                            {{ $venta->usuario }}
-                        </td>
+                    @forelse($ventas as $venta)
 
-                        <td>
-                            ${{ number_format($venta->total, 2) }}
-                        </td>
+                        <tr>
 
-                        <td>
-                            {{ $venta->metodo_pago }}
-                        </td>
+                            <td>
+                                <span class="admin-id">
+                                    #{{ $venta->id }}
+                                </span>
+                            </td>
 
-                        <td>
-                            {{ $venta->direccion }}
-                        </td>
+                            <td>
 
-                        <td>
-                            {{ $venta->fecha }}
-                        </td>
+                                <div class="admin-sale-client">
 
-                        <td>
+                                    <div class="admin-user-avatar">
+                                        {{ strtoupper(substr($venta->usuario ?? 'C', 0, 1)) }}
+                                    </div>
 
-                            @if(strtolower($venta->estado ?? 'pendiente') === 'entregado')
+                                    <strong>
+                                        {{ $venta->usuario ?? 'Cliente' }}
+                                    </strong>
 
-                                <span class="venta-entregada">
-                                    ✅ Entregado
+                                </div>
+
+                            </td>
+
+                            <td>
+                                <strong class="admin-sale-total">
+                                    ${{ number_format($venta->total, 2) }}
+                                </strong>
+                            </td>
+
+                            <td>
+
+                                <span class="admin-payment-badge">
+                                    @if(strtolower($venta->metodo_pago ?? '') === 'efectivo')
+                                        💵
+                                    @elseif(strtolower($venta->metodo_pago ?? '') === 'tarjeta')
+                                        💳
+                                    @elseif(strtolower($venta->metodo_pago ?? '') === 'transferencia')
+                                        🏦
+                                    @else
+                                        💰
+                                    @endif
+
+                                    {{ $venta->metodo_pago }}
                                 </span>
 
-                            @else
+                            </td>
 
-                                <form
-                                    action="{{ route('admin.ventas.entregar', $venta->id) }}"
-                                    method="POST"
+                            <td>
+
+                                <div
+                                    class="admin-sale-address"
+                                    title="{{ $venta->direccion }}"
                                 >
-                                    @csrf
-                                    @method('PATCH')
+                                    📍 {{ $venta->direccion }}
+                                </div>
 
-                                    <button
-                                        type="submit"
-                                        class="btn-entregar-admin"
+                            </td>
+
+                            <td>
+
+                                <div class="admin-sale-date">
+                                    <span>🗓️</span>
+                                    <span>{{ $venta->fecha }}</span>
+                                </div>
+
+                            </td>
+
+                            <td>
+
+                                @if(strtolower($venta->estado ?? 'pendiente') === 'entregado')
+
+                                    <span class="admin-status-badge admin-status-delivered">
+                                        ✓ Entregado
+                                    </span>
+
+                                @else
+
+                                    <form
+                                        action="{{ route('admin.ventas.entregar', $venta->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('¿Confirmas que este pedido ya fue entregado?')"
                                     >
-                                        📦 Pendiente
-                                    </button>
 
-                                </form>
+                                        @csrf
+                                        @method('PATCH')
 
-                            @endif
+                                        <button
+                                            type="submit"
+                                            class="admin-delivery-button"
+                                        >
+                                            📦 Marcar entregado
+                                        </button>
 
-                        </td>
+                                    </form>
 
-                        <td>
+                                @endif
 
-                            @if(file_exists(public_path('tickets/ticket_' . $venta->id . '.pdf')))
+                            </td>
 
-                                <a
-                                    href="{{ route('compra.comprobante', $venta->id) }}"
-                                    target="_blank"
-                                    class="btn-pdf-admin"
-                                >
-                                    📄 Ver PDF
-                                </a>
+                            <td>
 
-                            @else
+                                @if(file_exists(public_path('tickets/ticket_' . $venta->id . '.pdf')))
 
-                                <span class="sin-pdf-admin">
-                                    Sin PDF
-                                </span>
+                                    <a
+                                        href="{{ route('compra.comprobante', $venta->id) }}"
+                                        target="_blank"
+                                        class="admin-pdf-button"
+                                    >
+                                        📄 Ver PDF
+                                    </a>
 
-                            @endif
+                                @else
 
-                        </td>
+                                    <span class="admin-no-pdf">
+                                        Sin PDF
+                                    </span>
 
-                    </tr>
+                                @endif
 
-                @empty
+                            </td>
 
-                    <tr>
-                        <td colspan="8">
-                            No hay ventas pendientes de corte.
-                        </td>
-                    </tr>
+                        </tr>
 
-                @endforelse
+                    @empty
 
-            </tbody>
+                        <tr>
 
-        </table>
+                            <td colspan="8">
+
+                                <div class="admin-empty-state">
+
+                                    <span>✅</span>
+
+                                    <strong>
+                                        No hay ventas pendientes de corte
+                                    </strong>
+
+                                    <p>
+                                        Las nuevas ventas aparecerán aquí automáticamente.
+                                    </p>
+
+                                    <a
+                                        href="{{ route('admin.cortes') }}"
+                                        class="admin-secondary-button"
+                                    >
+                                        📚 Ver historial de cortes
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     </div>
 
-</div>
+    <div class="admin-sales-help">
+
+        <div class="admin-sales-help-icon">
+            💡
+        </div>
+
+        <div>
+            <strong>¿Cómo funciona el corte?</strong>
+
+            <p>
+                Primero marca los pedidos como entregados. Al generar el corte,
+                las ventas entregadas pendientes de corte se incluirán en el PDF
+                y dejarán de aparecer en esta pantalla.
+            </p>
+        </div>
+
+    </div>
+
+</section>
 
 @endsection
