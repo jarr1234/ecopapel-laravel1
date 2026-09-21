@@ -1,0 +1,27 @@
+FROM dunglas/frankenphp:php8.4
+
+RUN install-php-extensions \
+    pdo_mysql \
+    mbstring \
+    bcmath \
+    intl \
+    zip
+
+WORKDIR /app
+
+COPY . /app
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+RUN mkdir -p storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+ENV SERVER_NAME=:3000
+
+CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=3000"]

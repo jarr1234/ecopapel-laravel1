@@ -24,3 +24,6 @@ Homestead.yaml
 Thumbs.db
 /public/tickets/*.pdf
 /public/cortes/*.pdf
+**/caddy
+frankenphp
+frankenphp-worker.php
