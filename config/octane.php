@@ -37,7 +37,6 @@ return [
     | Supported: "roadrunner", "swoole", "frankenphp"
     |
     */
-
     'server' => env('OCTANE_SERVER', 'roadrunner'),
 
     /*
