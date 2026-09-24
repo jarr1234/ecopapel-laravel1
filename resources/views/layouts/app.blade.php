@@ -24,7 +24,8 @@
         <a href="{{ route('inicio') }}" class="marca">
 
             <img
-                src="{{ asset('imagenes/logo2.png') }}"
+                src="/imagenes/logo2.png"
+            
                 alt="Logo de Ecopapel"
                 class="marca-logo"
             >
