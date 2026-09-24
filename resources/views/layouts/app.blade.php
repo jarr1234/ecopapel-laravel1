@@ -7,7 +7,7 @@
 
     <title>@yield('title', 'Ecopapel')</title>
 
-    <link rel="stylesheet" href="{{ asset('CSS/estilos.css') }}">
+    <link rel="stylesheet" href="/CSS/estilos.css">
 
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
